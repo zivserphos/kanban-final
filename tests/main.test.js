@@ -4,6 +4,7 @@
 const puppeteer = require('puppeteer')
 const full4s = require('./utils/utils')
 const path = require('path')
+const { SlowBuffer } = require('buffer')
 const basePath = path.join(__dirname, '..')
 const pagePath = path.join('file://', basePath, `/solution/index.html`)
 
@@ -113,7 +114,7 @@ let wasInPut = false
 
 describe(projectName, () => {
   beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: true }) //change to false if you want to view the page
+    browser = await puppeteer.launch({ headless: false , slowMo:40}) //change to false if you want to view the page
     page = await browser.newPage()
     page.setRequestInterception(true)
     page.on('request', async (req) => {

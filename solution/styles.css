@@ -43,7 +43,7 @@ body {
     background-color: red;
   }
   
-  #inprogress {
+  #in-progress {
     background-color: #ffaf00;
     /* display: none; */
   }
@@ -71,4 +71,13 @@ body {
     content: ' \00BB';
   }
 
+
+  .task {
+    background-color: white;
+    margin: 0.2rem 0rem 0.3rem 0rem;
+    border: 0.1rem solid black;
+    border-radius: 0.2rem;
+    padding: 0.5rem 0.2rem 0.5rem 2rem;
+  }
  
+  
