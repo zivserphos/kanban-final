@@ -39,16 +39,16 @@ body {
 
 
   
-  #todo {
+  #toDoSection {
     background-color: red;
   }
   
-  #in-progress {
+  #inProgSection {
     background-color: #ffaf00;
     /* display: none; */
   }
   
-  #done {
+  #doneSection {
     background-color: #018b01;
     /* display: none; */
   }

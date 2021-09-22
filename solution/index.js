@@ -13,19 +13,17 @@ if (!tasks)
 else
 {
     localSave = JSON.parse(tasks);
-    console.log(tasks)
     for (let key in localSave)
     {
         for(let task of localSave[key])
         {
             const li = createElement("li", [task] , ["task"] , {draggable: "true"})
-            console.log(document.getElementById(key).firstChild)
-            document.getElementById(key).append(li)
+            document.getElementById(key).prepend(li)
         }
     }
 }
 localSave = JSON.parse(window.localStorage.getItem("tasks"))
-console.log(localSave)
+
 
 function createElement(tagName, children = [], classes = [], attributes = {}) 
 {
@@ -33,7 +31,6 @@ function createElement(tagName, children = [], classes = [], attributes = {})
 
     for (let child of children)
     {
-        console.log(child)
         el.append(child)
     }
 
@@ -63,9 +60,10 @@ function enterButton(e)
 {
     if (e.target.classList.contains("submit"))
     {
-       const task = document.createElement("div")
-       const taskInput = document.getElementById(e.target.id.split("submit-")[1]+ "-task").value
-       const div = e.target.closest("section")
+       const inputTag = document.getElementById(e.target.id.split("submit-")[1]+ "-task")
+       const taskInput = inputTag.value
+       const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s")
+       console.log(ul)
        const li = createElement("li", [] , [] , {draggable: "true"})
        li.addEventListener("dblclick" , function(e) {editTask(e)})
        li.classList.add("task")
@@ -76,8 +74,8 @@ function enterButton(e)
        }
        else
        {
-        div.append(li)
-        localSave[div.id].push(taskInput)
+        ul.prepend(li)
+        localSave[ul.id].push(taskInput)
         localStorage.setItem("tasks" , JSON.stringify(localSave))
         //localStorage.getItem("tasks").push(taskInput)
        }
