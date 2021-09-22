@@ -1,8 +1,7 @@
-body
-{
+body {
     background-color: purple;
-}
-.kanban-heading {
+  }
+  .kanban-heading {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -46,4 +45,17 @@ body
   #done {
     background-color: #018b01;
     /* display: none; */
+  }
+
+  .submit {
+    cursor: pointer;
+    background-color: blue; /* Green */
+    border: none;
+    color: white;
+    margin-top: 10px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
   }
