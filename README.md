@@ -28,15 +28,15 @@ There should be 3 `section` elements. One for to-do tasks, one for in-progress t
 
 Each `section` should contain:
 
-- [ ] a `ul` element with the appropriate class - `to-do-tasks`/`in-progress-tasks`/`done-tasks`
-- [ ] an `input` element with an appropriate id - `add-to-do-task`/`add-in-progress-task`/`add-done-task`
-- [ ] a `button` element with an appropriate id - `submit-add-to-do`/`submit-add-in-progress`/`submit-add-done`
-- [ ] Each `ul` should contain task elements, which are `li` elements with the `task` class.
+- [X] a `ul` element with the appropriate class - `to-do-tasks`/`in-progress-tasks`/`done-tasks`
+- [X] an `input` element with an appropriate id - `add-to-do-task`/`add-in-progress-task`/`add-done-task`
+- [X] a `button` element with an appropriate id - `submit-add-to-do`/`submit-add-in-progress`/`submit-add-done`
+- [] Each `ul` should contain task elements, which are `li` elements with the `task` class.
 
 In addition the page should contain:
 
-- [ ] a heading with a `page-title` id
-- [ ] a global input with the `search` id
+- [X] a heading with a `page-title` id
+- [!] a global input with the `search` id
 
 ### Interaction
 
