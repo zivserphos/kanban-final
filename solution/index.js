@@ -3,6 +3,7 @@ let originTask;
 let altpressed = false;
 let currentEl;
 let localSave;
+
 if (!tasks)
 {
     tasks = {
@@ -15,70 +16,57 @@ if (!tasks)
 else
 {
     localSave = JSON.parse(tasks);
-    for (let key in localSave)
-    {
-        for(let task of localSave[key])
-        {
-            const li = createElement("li", [task] , ["task"] , {draggable: "true" , onblur: "saveEditTask(event)"})
-            document.getElementById(key).prepend(li)
+    for (let key in localSave) {
+        for(let task of localSave[key]) {
+            const li = createElement("li", [task] , ["task"] , {draggable: "true" , onmouseover: "hoverElement(event)" ,onmouseout: "outOfElemet(event)" , onclick: "editTask(event)" , onblur: "saveEditTask(event)"})
+            document.getElementById(key).append(li)
         }
     }
 }
 localSave = JSON.parse(window.localStorage.getItem("tasks"))
 
 
-function createElement(tagName, children = [], classes = [], attributes = {}) 
-{
+function createElement(tagName, children = [], classes = [], attributes = {}) {
     let el = document.createElement(tagName);
 
-    for (let child of children)
-    {
+    for (let child of children) {
         el.append(child)
     }
 
-    for (let cls of classes)
-    {
+    for (let cls of classes) {
         el.classList.add(cls)
     }
 
-    for (let attr in attributes)
-    {
+    for (let attr in attributes) {
         el.setAttribute(attr , attributes[attr])
     }
     return el
 }
 
 
-function handleClicks(e)
-{   
-    if (e.target.classList.contains("submit"))
-    {
+function handleClicks(e) {   
+    if (e.target.classList.contains("submit")) {
        const inputTag = document.getElementById(e.target.id.split("submit-")[1]+ "-task")
        const taskInput = inputTag.value
        const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s")
-       const li = createElement("li", [] , [] , {draggable: "true" , onblur: "saveEditTask(event)"})
+       const li = createElement("li", [] , [] , {draggable: "true", onmouseover: "hoverElement(event)", onmouseout: "outOfElemet(event)", onclick: "editTask(event)", onblur: "saveEditTask(event)"})
        li.addEventListener("dblclick" , function(e) {editTask(e)})
        li.classList.add("task")
        li.append(taskInput)
-       if (taskInput === "")
-       {
+       if (taskInput === "") {
            alert("You cant add an empty input as a task")
        }
-       else
-       {
+       else {
         ul.prepend(li)
         localSave[ul.id].push(taskInput)
         localStorage.setItem("tasks" , JSON.stringify(localSave))
-        
        }
        
     }
 }
 
-function moveTaskToSection(id)
-{
-    if(currentEl && currentEl.closest("ul").id !== id)
-    {
+function moveTaskToSection(id) {
+    if(currentEl && currentEl.closest("ul").id !== id) {
         localSave[id].unshift(currentEl.textContent)
         const indexOfTask = localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent)
         localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
@@ -87,56 +75,44 @@ function moveTaskToSection(id)
     }
 }
 
-function altPressed(event)
-{
-    if (event.key === "Alt")
-    {
+function altPressed(event) {
+    if (event.key === "Alt") {
           altpressed = true;  
     }
 }
 
-function altGone(event)
-{
+function altGone(event) {
     altpressed = false
 }
 
 function changeTaskSection(event) // check if the user type a nubmer from 1 to 3 while the alt key was pressed and thats mean should move the task a section
 {
-    if(altpressed && event.key === "1")
-    {
+    if(altpressed && event.key === "1") {
         moveTaskToSection("todo")
     }
-    else if (altpressed && event.key === "2")
-    {
+    else if (altpressed && event.key === "2") {
         moveTaskToSection("in-progress")
     }
-    else if (altpressed && event.key === "3")
-    {
+    else if (altpressed && event.key === "3") {
         moveTaskToSection("done")
     }
     
 }
 
-function hoverElement(event)
-{
-    if(event.target.tagName === "LI")
-    {
+function hoverElement(event) {
+    if(event.target.tagName === "LI") {
         currentEl = event.target;
     }
 }
 
-function outOfElement(event)
-{
-    if(event.target.tagName === "LI")
-    {
+function outOfElemet(event) {
+    if(event.target.tagName === "LI") {
         currentEl = null
     }
 }
 
-function searchTaskByQuery(event)
-{
-    if (event.target.id === "search")
-    {
+function searchTaskByQuery(event) {
+    if (event.target.id === "search") {
         query = event.target.value.toLowerCase()
         const todo = document.getElementById("todo")
         const inProgress =  document.getElementById("in-progress")
@@ -150,8 +126,7 @@ function searchTaskByQuery(event)
     }
 }
 
-function editTask(event)
-{
+function editTask(event) {
     const tag = event.target;
     originTask = tag.textContent
     const localSaveKey = localSave[tag.closest("ul").id]
@@ -161,30 +136,23 @@ function editTask(event)
     localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
-function saveEditTask(event)
-{
+function saveEditTask(event) {
     const tag = event.target
     const localSaveKey = localSave[tag.closest("ul").id]
     tag.style.background = '';
-    if (tag.textContent !== "")
-    {
+    if (tag.textContent !== "") {
         localSaveKey[localSaveKey.indexOf("TO EDIT")] = tag.textContent
     }
-    else
-    {
+    else {
         localSaveKey[localSaveKey.indexOf("TO EDIT")] = originTask
         tag.textContent = originTask
     }
     localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
-document.addEventListener("click" ,  function(e){handleClicks(e)})
-document.addEventListener("keydown" , function(event){altPressed(event)})
-document.addEventListener("keyup" , function(event){altGone(event)})
-document.addEventListener("keydown", function(event){changeTaskSection(event)})
-document.addEventListener("mouseover" , function(event){hoverElement(event)})
-document.addEventListener("mouseout" ,  function(event){outOfElement(event)})
-document.addEventListener("keyup" , function(event) {searchTaskByQuery(event)})
-document.addEventListener("dblclick" , function(event) {editTask(event)})
+document.addEventListener("keydown" , event => altPressed(event))
+document.addEventListener("keyup" , event => altGone(event))
+document.addEventListener("keydown", event => changeTaskSection(event))
+//document.addEventListener("click" ,  event => handleClicks(e))
+//document.getElementById("search").addEventListener("keyup" , event => searchTaskByQuery(event))
 
-//window.localStorage.setItem("tasks", {todo: [] , "in-progress": [] , done: []} )
