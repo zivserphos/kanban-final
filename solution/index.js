@@ -1,4 +1,5 @@
 let tasks = window.localStorage.getItem("tasks")
+let originTask;
 let altpressed = false;
 let currentEl;
 let localSave;
@@ -18,7 +19,7 @@ else
     {
         for(let task of localSave[key])
         {
-            const li = createElement("li", [task] , ["task"] , {draggable: "true"})
+            const li = createElement("li", [task] , ["task"] , {draggable: "true" , onblur: "saveEditTask(event)"})
             document.getElementById(key).prepend(li)
         }
     }
@@ -47,26 +48,15 @@ function createElement(tagName, children = [], classes = [], attributes = {})
     return el
 }
 
-function editTask (e)
-{
-    if (e.target.tag = "li")
-    {
-       
-       const changeTask = document.createElement("input")
-       changeTask.innerHTML = e.target.innerHTML
-       e.parentNode.replaceChild(changeTask, e.target);
-    }
-}
 
 function handleClicks(e)
 {   
-
     if (e.target.classList.contains("submit"))
     {
        const inputTag = document.getElementById(e.target.id.split("submit-")[1]+ "-task")
        const taskInput = inputTag.value
        const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s")
-       const li = createElement("li", [] , [] , {draggable: "true"})
+       const li = createElement("li", [] , [] , {draggable: "true" , onblur: "saveEditTask(event)"})
        li.addEventListener("dblclick" , function(e) {editTask(e)})
        li.classList.add("task")
        li.append(taskInput)
@@ -79,7 +69,7 @@ function handleClicks(e)
         ul.prepend(li)
         localSave[ul.id].push(taskInput)
         localStorage.setItem("tasks" , JSON.stringify(localSave))
-        //localStorage.getItem("tasks").push(taskInput)
+        
        }
        
     }
@@ -93,7 +83,7 @@ function moveTaskToSection(id)
         const indexOfTask = localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent)
         localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
         localStorage.setItem("tasks", JSON.stringify(localSave))
-        document.getElementById(id).append(currentEl)
+        document.getElementById(id).prepend(currentEl)
     }
 }
 
@@ -156,12 +146,36 @@ function searchTaskByQuery(event)
         for(let i=0; i<inProgress.children.length; i++)
             inProgress.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? inProgress.children[i].hidden = false : inProgress.children[i].hidden =true
         for(let i=0; i<done.children.length; i++)
-        done.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? done.children[i].hidden = false : done.children[i].hidden =true
-
-        
-        
-        
+            done.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? done.children[i].hidden = false : done.children[i].hidden = true
     }
+}
+
+function editTask(event)
+{
+    const tag = event.target;
+    originTask = tag.textContent
+    const localSaveKey = localSave[tag.closest("ul").id]
+    tag.contentEditable = "true";
+    tag.style.backgroundColor = "pink";
+    localSaveKey[localSaveKey.indexOf(tag.textContent)] = "TO EDIT"
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
+}
+
+function saveEditTask(event)
+{
+    const tag = event.target
+    const localSaveKey = localSave[tag.closest("ul").id]
+    tag.style.background = '';
+    if (tag.textContent !== "")
+    {
+        localSaveKey[localSaveKey.indexOf("TO EDIT")] = tag.textContent
+    }
+    else
+    {
+        localSaveKey[localSaveKey.indexOf("TO EDIT")] = originTask
+        tag.textContent = originTask
+    }
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
 document.addEventListener("click" ,  function(e){handleClicks(e)})
@@ -171,4 +185,6 @@ document.addEventListener("keydown", function(event){changeTaskSection(event)})
 document.addEventListener("mouseover" , function(event){hoverElement(event)})
 document.addEventListener("mouseout" ,  function(event){outOfElement(event)})
 document.addEventListener("keyup" , function(event) {searchTaskByQuery(event)})
+document.addEventListener("dblclick" , function(event) {editTask(event)})
+
 //window.localStorage.setItem("tasks", {todo: [] , "in-progress": [] , done: []} )
