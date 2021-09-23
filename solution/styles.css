@@ -54,23 +54,29 @@ body {
     /* display: none; */
   }
 
-  .submit {
+    /*
+    .submit {
     cursor: pointer;
-    background-color: blue; /* Green */
-    border: none;
+    background-color: blue; 
     color: white;
     margin-top: 10px;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
+    font-size: 20px;
+  }
+
+  .submit svg
+  {
+    transform: rotate(180deg);
+    transition: all .5s;
   }
 
   .submit:hover
   {
     content: ' \00BB';
-  }
+  }  */
 
 
   .task {
@@ -81,4 +87,42 @@ body {
     padding: 0.5rem 0.2rem 0.5rem 2rem;
   }
  
+  .submit, .submitText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+  }
   
+  
+  .submit {
+    width: 120px;
+    height: 40px;
+    background-color: dodgerblue;
+    border-radius: 6px;
+    margin-top: 10px;
+    transition: all .3s cubic-bezier(0.67, 0.17, 0.40, 0.83);
+  }
+  
+  .submit svg{
+    transform: rotate(180deg);
+    transition: all .5s;
+  }
+  
+  .submit__circle {
+    width: 70px;
+    height: 70px;
+    background: mediumseagreen;
+    border-radius: 50%;
+    transform: rotate(-180deg);
+  }
+  
+  .submit:hover {
+    cursor: pointer;
+  }
+  
+  .submitText {
+    color: black;
+    font-size: 1.2em;
+    transition: all 1.5s;
+  }

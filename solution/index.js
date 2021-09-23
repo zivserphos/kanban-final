@@ -45,24 +45,36 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 
 
 function handleClicks(e) {   
-    if (e.target.classList.contains("submit")) {
-       const inputTag = document.getElementById(e.target.id.split("submit-")[1]+ "-task")
-       const taskInput = inputTag.value
-       const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s")
-       const li = createElement("li", [] , [] , {draggable: "true", onmouseover: "hoverElement(event)", onmouseout: "outOfElemet(event)", onclick: "editTask(event)", onblur: "saveEditTask(event)"})
-       li.addEventListener("dblclick" , function(e) {editTask(e)})
-       li.classList.add("task")
-       li.append(taskInput)
-       if (taskInput === "") {
-           alert("You cant add an empty input as a task")
-       }
-       else {
-        ul.prepend(li)
-        localSave[ul.id].push(taskInput)
-        localStorage.setItem("tasks" , JSON.stringify(localSave))
-       }
-       
+    const buttonTag = e.target.closest("button")
+    const inputTag = document.getElementById(buttonTag.id.split("submit-")[1]+ "-task")
+    const taskInput = inputTag.value
+    const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s")
+    const li = createElement("li", [] , [] , {draggable: "true", onmouseover: "hoverElement(event)", onmouseout: "outOfElemet(event)", onclick: "editTask(event)", onblur: "saveEditTask(event)"})
+    li.addEventListener("dblclick" , function(e) {editTask(e)})
+    li.classList.add("task")
+    li.append(taskInput)
+    if (taskInput === "") {
+        alert("You cant add an empty input as a task")
     }
+    else {
+    ul.prepend(li)
+    localSave[ul.id].push(taskInput)
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
+    }
+    let buttonText = buttonTag.children[0]
+    const originbuttonText = buttonText.textContent
+    const tickMark = "<svg width=\"58\" height=\"45\" viewBox=\"0 0 58 45\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"#fff\" fill-rule=\"nonzero\" d=\"M19.11 44.64L.27 25.81l5.66-5.66 13.18 13.18L52.07.38l5.65 5.65\"/></svg>";
+    if (taskInput !== ""){
+        if (buttonText.innerHTML.toLowerCase() === "add " + buttonText.closest("section").children[0].id) {
+            buttonText.innerHTML = tickMark;
+        }
+        buttonTag.classList.toggle('submit__circle');
+        setTimeout(function() { buttonTag.classList.toggle('submit__circle')}, 1000)
+        setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1200)
+    }
+
+   
+    
 }
 
 function moveTaskToSection(id) {
@@ -150,9 +162,37 @@ function saveEditTask(event) {
     localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
+
+
 document.addEventListener("keydown" , event => altPressed(event))
 document.addEventListener("keyup" , event => altGone(event))
 document.addEventListener("keydown", event => changeTaskSection(event))
 //document.addEventListener("click" ,  event => handleClicks(e))
 //document.getElementById("search").addEventListener("keyup" , event => searchTaskByQuery(event))
 
+
+
+
+
+
+
+
+/*function editButton()
+{
+    let buttonText = document.querySelector(".submitText");
+    const buttonTag = buttonText.closest("button")
+    const tickMark = "<svg width=\"58\" height=\"45\" viewBox=\"0 0 58 45\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"#fff\" fill-rule=\"nonzero\" d=\"M19.11 44.64L.27 25.81l5.66-5.66 13.18 13.18L52.07.38l5.65 5.65\"/></svg>";
+    if (buttonText.innerHTML !== "Submit") {
+        console.log(buttonText.innerHTML)
+        buttonText.innerHTML = "Submit";
+    }
+    else if (buttonText.innerHTML === "Submit") {
+        console.log("of")
+        buttonText.innerHTML = tickMark;
+    }
+    buttonTag.classList.toggle('submit__circle');
+}
+const x = document.querySelector(".submitText")
+console.log(x)
+x.addEventListener('click', event => editButton(event))
+x.closest("button").addEventListener('click', event => editButton(event))*/
