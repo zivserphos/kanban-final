@@ -58,8 +58,9 @@ function editTask (e)
     }
 }
 
-function enterButton(e)
-{
+function handleClicks(e)
+{   
+
     if (e.target.classList.contains("submit"))
     {
        const inputTag = document.getElementById(e.target.id.split("submit-")[1]+ "-task")
@@ -90,7 +91,7 @@ function moveTaskToSection(id)
     {
         localSave[id].unshift(currentEl.textContent)
         const indexOfTask = localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent)
-        localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent))
+        localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
         localStorage.setItem("tasks", JSON.stringify(localSave))
         document.getElementById(id).append(currentEl)
     }
@@ -142,11 +143,32 @@ function outOfElement(event)
     }
 }
 
-document.addEventListener("click" ,  function(e){enterButton(e)})
+function searchTaskByQuery(event)
+{
+    if (event.target.id === "search")
+    {
+        query = event.target.value.toLowerCase()
+        const todo = document.getElementById("todo")
+        const inProgress =  document.getElementById("in-progress")
+        const done = document.getElementById("done")
+        for(let i=0; i<todo.children.length;i++)
+            todo.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? todo.children[i].hidden = false : todo.children[i].hidden =true
+        for(let i=0; i<inProgress.children.length; i++)
+            inProgress.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? inProgress.children[i].hidden = false : inProgress.children[i].hidden =true
+        for(let i=0; i<done.children.length; i++)
+        done.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? done.children[i].hidden = false : done.children[i].hidden =true
+
+        
+        
+        
+    }
+}
+
+document.addEventListener("click" ,  function(e){handleClicks(e)})
 document.addEventListener("keydown" , function(event){altPressed(event)})
 document.addEventListener("keyup" , function(event){altGone(event)})
 document.addEventListener("keydown", function(event){changeTaskSection(event)})
 document.addEventListener("mouseover" , function(event){hoverElement(event)})
 document.addEventListener("mouseout" ,  function(event){outOfElement(event)})
-
+document.addEventListener("keyup" , function(event) {searchTaskByQuery(event)})
 //window.localStorage.setItem("tasks", {todo: [] , "in-progress": [] , done: []} )
