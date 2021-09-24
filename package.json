@@ -24,5 +24,8 @@
     "testMatch": [
       "**/tests/**/*.test.+(js)"
     ]
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
   }
 }
