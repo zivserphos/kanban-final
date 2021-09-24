@@ -56,7 +56,7 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
     }
     else {
     ul.prepend(li)
-    localSave[ul.id].push(taskInput)
+    localSave[ul.id].unshift(taskInput)
     localStorage.setItem("tasks" , JSON.stringify(localSave))
     }
     let buttonText = buttonTag.children[0]
@@ -104,7 +104,6 @@ function editTask(event) {
     const tag = event.target; // find tag
     tag.focus()
     originTask = tag.textContent
-    console.log(originTask)
     const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
     tag.contentEditable = "true"; // allows edit text without turn into input
     //localSaveKey[localSaveKey.indexOf(tag.textContent)] = "TO EDIT" 
@@ -113,22 +112,18 @@ function editTask(event) {
 
 function saveEditTask(event) {
     const tag = event.target
-    console.log(tag.textContent)
-    console.log(originTask.textContent)
     tag.style.background = '';
     const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
     if (tag.textContent !== "") {
         localSaveKey[localSaveKey.indexOf(originTask)] = tag.textContent
     }
     tag.contentEditable = false;
-    console.log(localSaveKey)
     localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
 function drag(event) {
     const listId = event.target.closest("ul").id;
     const localSaveKey = localSave[listId];
-    console.log(localSaveKey)
     const indexTask = localSaveKey.indexOf(event.target.textContent)
     event.dataTransfer.setData("text", [listId , indexTask]);
 }
@@ -140,7 +135,6 @@ function drop(event) {
     let ulLength = document.getElementById(data[0]).children.length
     const originEl = document.getElementById(data[0]).children[(ulLength-1) - data[1]];
     if (data[0] !== curUl.id){
-        console.log(originEl)
         curUl.prepend(originEl)
         localSave[curUl.id].push(originEl.textContent)
         localSave[data[0]].splice(data[1],1)
@@ -161,32 +155,61 @@ document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed 
 document.addEventListener("keyup" , event => altpressed = false)
 //document.addEventListener("keydown", event => changeTaskSection(event))
 
-async function saveApi() {
+async function saveApi(event) {
+    
+    event.target.classList.add("loader")
+    console.log("kaka")
     const tasks = localSave
-    const response = fetch('https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb' , {
+    const response = await fetch('https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb' , {
         method: 'PUT',
         mode: "cors",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({tasks}),
-    }).then(response => response.json())
-      .then(data => localStorage.setItem("tasks" , JSON.stringify(data.tasks)))
+    })
+    if (response.ok)
+    {
+        const data = await response.json()
+        const lastTasks = JSON.stringify(data.tasks)
+        localStorage.setItem("tasks" , lastTasks)
+    }
+    else
+    {
+        alert("not good")
+    }
+    event.target.classList.remove("loader")
+      
     
+    
+     
 }
 
-async function loadApi()
+async function loadApi(event)
 {
-    const lastTasks = await (await (await fetch("https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb")).json()).tasks
-    for (let key in localSave){
-        document.getElementById(key).textContent = ""
-    }
-    localSave = lastTasks
-    for (let key in localSave){
-        for(let task of localSave[key]) {
-            const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
-            document.getElementById(key).append(li)
+    event.target.classList.add("loader")
+    const response = await fetch("https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb")
+    if (response.ok)
+    {
+        const data = await response.json()
+        const lastTasks = data.tasks 
+        for (let key in localSave){
+            document.getElementById(key).textContent = ""
         }
+
+        localSave = JSON.parse(JSON.stringify(lastTasks))
+        for (let key in localSave){
+            for(let task of localSave[key]) {
+                const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
+                document.getElementById(key).append(li)
+            }
+        }
+        localStorage.setItem("tasks" , JSON.stringify(localSave))
+        event.target.classList.remove("loader")
+    }   
+    else {
+        alert("good")
     }
-    localStorage.setItem("tasks" , JSON.stringify(localSave))
+
 }
+
