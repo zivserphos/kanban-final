@@ -4,6 +4,9 @@ let altpressed = false;
 let currentEl;
 let localSave;
 
+const hoverElement = event => event.target.tagName === "LI" ? currentEl = event.target : hoverElement
+const outOfElemet = event => event.target.tagName === "LI" ? currentEl = null : outOfElemet
+
 if (!tasks)
 {
     tasks = {
@@ -28,15 +31,12 @@ localSave = JSON.parse(window.localStorage.getItem("tasks"))
 
 function createElement(tagName, children = [], classes = [], attributes = {}) {
     let el = document.createElement(tagName);
-
     for (let child of children) {
-        el.append(child)
+        el.prepend(child)
     }
-
     for (let cls of classes) {
         el.classList.add(cls)
     }
-
     for (let attr in attributes) {
         el.setAttribute(attr , attributes[attr])
     }
@@ -58,7 +58,7 @@ function handleClicks(e) {
     }
     else {
     ul.prepend(li)
-    localSave[ul.id].push(taskInput)
+    localSave[ul.id].unshift(taskInput)
     localStorage.setItem("tasks" , JSON.stringify(localSave))
     }
     let buttonText = buttonTag.children[0]
@@ -71,10 +71,7 @@ function handleClicks(e) {
         buttonTag.classList.toggle('submit__circle');
         setTimeout(function() { buttonTag.classList.toggle('submit__circle')}, 1000)
         setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1200)
-    }
-
-   
-    
+    }  
 }
 
 function moveTaskToSection(id) {
@@ -87,56 +84,24 @@ function moveTaskToSection(id) {
     }
 }
 
-function altPressed(event) {
-    if (event.key === "Alt") {
-          altpressed = true;  
-    }
-}
+const changeTaskSection = event => altpressed && event.key === "1" ? moveTaskToSection("todo") 
+:  altpressed && event.key === "2" ? moveTaskToSection("in-progress")
+:  altpressed && event.key === "3" ? moveTaskToSection("in-progress") : changeTaskSection
 
-function altGone(event) {
-    altpressed = false
-}
-
-function changeTaskSection(event) // check if the user type a nubmer from 1 to 3 while the alt key was pressed and thats mean should move the task a section
-{
-    if(altpressed && event.key === "1") {
-        moveTaskToSection("todo")
-    }
-    else if (altpressed && event.key === "2") {
-        moveTaskToSection("in-progress")
-    }
-    else if (altpressed && event.key === "3") {
-        moveTaskToSection("done")
-    }
-    
-}
-
-function hoverElement(event) {
-    if(event.target.tagName === "LI") {
-        currentEl = event.target;
-    }
-}
-
-function outOfElemet(event) {
-    if(event.target.tagName === "LI") {
-        currentEl = null
-    }
-}
 
 function searchTaskByQuery(event) {
-    if (event.target.id === "search") {
-        query = event.target.value.toLowerCase()
-        const todo = document.getElementById("todo")
-        const inProgress =  document.getElementById("in-progress")
-        const done = document.getElementById("done")
-        for(let i=0; i<todo.children.length;i++)
-            todo.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? todo.children[i].hidden = false : todo.children[i].hidden =true
-        for(let i=0; i<inProgress.children.length; i++)
-            inProgress.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? inProgress.children[i].hidden = false : inProgress.children[i].hidden =true
-        for(let i=0; i<done.children.length; i++)
-            done.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? done.children[i].hidden = false : done.children[i].hidden = true
+    query = event.target.value.toLowerCase()
+    const todo = document.getElementById("todo")
+    const inProgress =  document.getElementById("in-progress")
+    const done = document.getElementById("done")
+    for (let key in localSave) {
+        const ul = document.getElementById(key)
+        for(let i=0; i<ul.children.length;i++) {
+            ul.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? ul.children[i].hidden = false : ul.children[i].hidden =true
+        }   
     }
 }
+
 
 function editTask(event) {
     const tag = event.target;
@@ -175,11 +140,10 @@ function drop(event) {
     event.preventDefault()
     const data = event.dataTransfer.getData("text/html").split(",")
     const curUl = event.target.closest("section").children[0]
-    console.log(data[1])
     const ulLength = document.getElementById(data[0]).children.length
     const originEl = document.getElementById(data[0]).children[(ulLength-1) - data[1]];
     curUl.prepend(originEl)
-    localSave[curUl.id].push(originEl.textContent)
+    localSave[curUl.id].unshift(originEl.textContent)
     localSave[data[0]].splice(data[1],1)
     localStorage.setItem("tasks" , JSON.stringify(localSave))
   }
@@ -188,11 +152,6 @@ function drop(event) {
     event.preventDefault()
   }
 
-
-
-document.addEventListener("keydown" , event => altPressed(event))
-document.addEventListener("keyup" , event => altGone(event))
+document.addEventListener("keydown" , event => {if (event.key === "Alt") altpressed =true;})
+document.addEventListener("keyup" , event => altpressed = false)
 document.addEventListener("keydown", event => changeTaskSection(event))
-
-//document.addEventListener("click" ,  event => handleClicks(e))
-//document.getElementById("search").addEventListener("keyup" , event => searchTaskByQuery(event))
