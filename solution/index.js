@@ -108,7 +108,7 @@ function editTask(event) {
     const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
     tag.contentEditable = "true"; // allows edit text without turn into input
     //localSaveKey[localSaveKey.indexOf(tag.textContent)] = "TO EDIT" 
-    //localStorage.setItem("tasks" , JSON.stringify(localSave))
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
 
 function saveEditTask(event) {
@@ -171,13 +171,22 @@ async function saveApi() {
         },
         body: JSON.stringify({tasks}),
     }).then(response => response.json())
-      .then(data => console.log(data))
+      .then(data => localStorage.setItem("tasks" , JSON.stringify(data.tasks)))
     
 }
 
-function loadApi()
+async function loadApi()
 {
-    fetch("https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb")
-    .then(response => response.json())
-    .then(data => console.log(data))
+    const lastTasks = await (await (await fetch("https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb")).json()).tasks
+    for (let key in localSave){
+        document.getElementById(key).textContent = ""
+    }
+    localSave = lastTasks
+    for (let key in localSave){
+        for(let task of localSave[key]) {
+            const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
+            document.getElementById(key).append(li)
+        }
+    }
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
 }
