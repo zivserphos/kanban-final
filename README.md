@@ -31,7 +31,7 @@ Each `section` should contain:
 - [X] a `ul` element with the appropriate class - `to-do-tasks`/`in-progress-tasks`/`done-tasks`
 - [X] an `input` element with an appropriate id - `add-to-do-task`/`add-in-progress-task`/`add-done-task`
 - [X] a `button` element with an appropriate id - `submit-add-to-do`/`submit-add-in-progress`/`submit-add-done`
-- [] Each `ul` should contain task elements, which are `li` elements with the `task` class.
+- [X] Each `ul` should contain task elements, which are `li` elements with the `task` class.
 
 In addition the page should contain:
 
@@ -48,7 +48,7 @@ In addition the page should contain:
 
 ### Storage
 
-- [ ] The data of all the tasks should be saved to `localStorage` following any changes made to the data. The data should be saved under a storage key named `tasks`. It should be saved in the following format (use the data saved in the local storage to keep the data on the page after refresh):
+- [X] The data of all the tasks should be saved to `localStorage` following any changes made to the data. The data should be saved under a storage key named `tasks`. It should be saved in the following format (use the data saved in the local storage to keep the data on the page after refresh):
 
 ```json
 {
@@ -58,11 +58,11 @@ In addition the page should contain:
 }
 ```
 
-- [ ] Even if there are no tasks, there should still be a `tasks` key in the `localStorage`, in the above format (the arrays will just be empty).
+- [X] Even if there are no tasks, there should still be a `tasks` key in the `localStorage`, in the above format (the arrays will just be empty).
 
 ## Bonuses
 
-- [ ] Implement drag-and-drop sorting of tasks.
+- [X] Implement drag-and-drop sorting of tasks.
 - [ ] Add API integration:
 
   - [ ] Add save and load buttons that sync the current tasks to the API (see details in the [api-data.txt](#api-integration) file).
