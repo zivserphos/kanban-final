@@ -187,8 +187,7 @@ async function loadApi(event) { // async function that load the tasks from the a
     }
 }
 
-function clearAll(event) { // delete all the curren tasks
-    event.target.classList.add("loader")
+function clearAll(event) { // delete all the current tasks
     const uls = [document.getElementById("todo") , document.getElementById("in-progress") , document.getElementById("done")]
     for (let ul of uls){
         ul.textContent = ""
