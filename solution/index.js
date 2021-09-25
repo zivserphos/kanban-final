@@ -122,21 +122,23 @@ function saveEditTask(event) {
 }
 
 function drag(event) {
-    const listId = event.target.closest("ul").id;
-    const localSaveKey = localSave[listId];
-    const indexTask = localSaveKey.indexOf(event.target.textContent)
-    event.dataTransfer.setData("text", [listId , indexTask]);
+    const liTag = event.target // save the <li> tag
+    const listId = liTag.closest("ul").id; // save the <ul> id which is a key in the local storage
+    const localSaveKey = localSave[listId]; // the array of the same key with <ul> id
+    const indexTask = localSaveKey.indexOf(liTag.textContent) // the index of the task in the local storage tasks[key]
+    event.dataTransfer.setData("text", [listId , indexTask]); // save and pass the <ul> id and the index task 
+
 }
 
 function drop(event) {
-    event.preventDefault()
-    const data = event.dataTransfer.getData("text").split(",")
-    const curUl = event.target.closest("section").children[0]
-    let ulLength = document.getElementById(data[0]).children.length
-    const originEl = document.getElementById(data[0]).children[(ulLength-1) - data[1]];
-    if (data[0] !== curUl.id){
+    event.preventDefault() // allow drop an events on other elements
+    const data = event.dataTransfer.getData("text").split(",") // an array with the passed data
+    const curUl = event.target.closest("section").children[0] // in case the user dropped the task somewhere in the section(not on the <ul> itself.)
+    let ulLength = document.getElementById(data[0]).children.length // the amount of tasks in the current section that the task was drop into
+    const originEl = document.getElementById(data[0]).children[data[1]]; // saves the element that dragged and should move a section
+    if (data[0] !== curUl.id){ //condition that prevents the user from drag tasks to his section
         curUl.prepend(originEl)
-        localSave[curUl.id].push(originEl.textContent)
+        localSave[curUl.id].unshift(originEl.textContent)
         localSave[data[0]].splice(data[1],1)
         localStorage.setItem("tasks" , JSON.stringify(localSave))
         ulLength+=1
@@ -144,7 +146,7 @@ function drop(event) {
   }
 
   function allowDrop(event){
-    event.preventDefault()
+    event.preventDefault() // allow drop an events on other elements
   }
 
 function toPink(event){
