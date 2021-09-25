@@ -6,7 +6,7 @@ let localSave; // a global variable with the value of localStorage.tasks parsed 
 
 const allowDrop = event => event.preventDefault() // allow drop an events on other elements
 const toPink = event => event.target.style.backgroundColor = "pink" // paint the <li> element(task) in pink background when focused
-const mouseOverElement = event => event.target.tagName === "LI" ? currentEl = event.target : hoverElement // attr for <li> elements that can tell if the mouse is over the element
+const mouseOverElement = event => event.target.tagName === "LI" ? currentEl = event.target : mouseOverElement // attr for <li> elements that can tell if the mouse is over the element
 const outOfElemet = event => event.target.tagName === "LI" ? currentEl = null : outOfElemet // attr for <li> elements that can tell if the mouse is over the element
 presentTasks(tasks) // call the function to present tasks on the page
 
@@ -54,6 +54,7 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
     const inputTag = document.getElementById(buttonTag.id.split("submit-")[1]+ "-task") // find that <input> closest tag  to the button (in the same section of the button)
     const taskInput = inputTag.value // input value
     const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s") // find the closest <ul> tag (in the same section of the button)
+    inputTag.value = "" // clear the input field after click on add task
     const li = createElement("li", [] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)", onmouseout: "outOfElemet(event)", onblur: "saveEditTask(event)" , ondragstart: "drag(event)", onfocus: "toPink(event)"}) // create new <li> element
     li.append(taskInput)
     if (taskInput === "") { // prevent the user from add empty task
@@ -72,8 +73,8 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
             buttonText.innerHTML = tickMark; // change the <div> buttonText into the icton tickMark
         }
         buttonTag.classList.toggle('submit__circle'); // flips the <button> tag 180deg
-        setTimeout(function() {buttonTag.classList.toggle('submit__circle')}, 1000) // flips the <button> again 180deg to return the same place he was
-        setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1200) // change the <div> button text in to the original text
+        setTimeout(function() {buttonTag.classList.toggle('submit__circle')}, 800) // flips the <button> again 180deg to return the same place he was
+        setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1000) // change the <div> button text in to the original text
     }  
 }
 
@@ -189,3 +190,4 @@ async function loadApi(event) { // async function that load the tasks from the a
 
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
 document.addEventListener("keyup" , event => altpressed = false) // if alt is no longer pressed
+
