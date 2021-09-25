@@ -129,9 +129,16 @@ function drag(event) {
 }
 
 function drop(event) {
+
     const data = event.dataTransfer.getData("text").split(",") // an array with the passed data
-    const curUl = event.target.closest("section").children[0] // in case the user dropped the task somewhere in the section(not on the <ul> itself.)
     const originEl = document.getElementById(data[0]).children[data[1]]; // saves the element that dragged and should move a section
+    if (event.target.id === "removeTask"){ // checks if element dragged into delete element, if it is delete the task
+        originEl.remove()
+        localSave[data[0]].splice(data[1],1) // update the changes
+        localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
+        return;
+    }
+    const curUl = event.target.closest("section").children[0] // in case the user dropped the task somewhere in the section(not on the <ul> itself.)
     if (data[0] !== curUl.id){ //condition that prevents the user from drag tasks to his section
         curUl.prepend(originEl) // insert the task into the top of the <ul>
         localSave[curUl.id].unshift(originEl.textContent) // save the change in the local storage

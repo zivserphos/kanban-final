@@ -1,3 +1,6 @@
+# link to my GitHub page
+https://zivserphos.github.io/kanban-final/solution/
+
 # Here you can see my tasks!.
 ![image](https://user-images.githubusercontent.com/89525096/134785269-9d9f7f75-8153-4bb7-ae0c-ef3b36c965fa.png)
 
