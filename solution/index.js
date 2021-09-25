@@ -187,6 +187,17 @@ async function loadApi(event) { // async function that load the tasks from the a
     }
 }
 
+function clearAll(event) { // delete all the curren tasks
+    event.target.classList.add("loader")
+    const uls = [document.getElementById("todo") , document.getElementById("in-progress") , document.getElementById("done")]
+    for (let ul of uls){
+        ul.textContent = ""
+        localSave[ul.id] = []
+    }
+    localStorage.setItem("tasks" , JSON.stringify(localSave))
+
+}
+
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
 document.addEventListener("keyup" , () => altpressed = false) // if alt is no longer pressed
 
