@@ -111,24 +111,3 @@ body {
     100% { transform: rotate(360deg); }
   }  
 
-  .remove-button {
-    display: inline-block;
-    right: 32px;
-    bottom: 10px;
-    text-align: center;
-    position: relative;
-    font-size: 110%;
-    color: darkred;
-    transition: 30s;
-    display: block;
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: 0.4s;
-}
-
-.remove-button:hover {
-    background-color: green;
-}

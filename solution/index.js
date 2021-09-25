@@ -10,9 +10,8 @@ const mouseOverElement = event => event.target.tagName === "LI" ? currentEl = ev
 const outOfElemet = event => event.target.tagName === "LI" ? currentEl = null : outOfElemet // attr for <li> elements that can tell if the mouse is over the element
 presentTasks(tasks) // call the function to present tasks on the page
 
-function presentTasks(tasks){
-    if (!tasks) // even if there is no tasks at the moment local storage will still have a key of tasks with empty array for each section
-    {
+function presentTasks(tasks) {
+    if (!tasks) {  // even if there is no tasks at the moment local storage will still have a key of tasks with empty array for each section
         tasks = {
             "todo": [],
             "in-progress": [],
@@ -35,7 +34,7 @@ function presentTasks(tasks){
 
 
 function createElement(tagName, children = [], classes = [], attributes = {}) { // create new element in more comfortable
-    let el = document.createElement(tagName); 
+    const el = document.createElement(tagName); 
     for (let child of children) { // append childs of element
         el.append(child)
     }
@@ -81,7 +80,6 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
 function moveTaskToSection(id) { 
     if(currentEl && currentEl.closest("ul").id !== id) {
         localSave[id].unshift(currentEl.textContent)
-        const indexOfTask = localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent)
         localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
         localStorage.setItem("tasks", JSON.stringify(localSave))
         document.getElementById(id).prepend(currentEl)
@@ -93,7 +91,7 @@ const changeTaskSection = event => altpressed && event.key === "1" ? moveTaskToS
 :  altpressed && event.key === "3" ? moveTaskToSection("done") : changeTaskSection // if alt+3 is currently pressed together move the task to second section else, do nothing
 
 function searchTaskByQuery(event) { // filter the tasks accordingly to the search bar input
-    query = event.target.value.toLowerCase()
+    const query = event.target.value.toLowerCase()
     for (let key in localSave) { 
         const ul = document.getElementById(key) // the <ul> with the id of key (todo , in-progress or done)
         for(let i=0; i<ul.children.length;i++) { // pass on all the <li> elements (tasks)
@@ -105,7 +103,6 @@ function searchTaskByQuery(event) { // filter the tasks accordingly to the searc
 function editTask(event) {
     const tag = event.target; // find tag
     originTask = tag.textContent // saves the origin task content
-    const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
     tag.contentEditable = "true"; // allows edit text without turn into input 
 }
 
@@ -115,6 +112,9 @@ function saveEditTask(event) { // function that saves the user edit when the <li
     const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
     if (tag.textContent !== "") { // if the user didnt left the input empty
         localSaveKey[localSaveKey.indexOf(originTask)] = tag.textContent // save the change that the user left
+    }
+    else {
+        tag.textContent = originTask
     }
     tag.contentEditable = false; // <li> is no more editable when out of focus
     localStorage.setItem("tasks" , JSON.stringify(localSave)) // saves the changes in the local storage
@@ -131,7 +131,6 @@ function drag(event) {
 function drop(event) {
     const data = event.dataTransfer.getData("text").split(",") // an array with the passed data
     const curUl = event.target.closest("section").children[0] // in case the user dropped the task somewhere in the section(not on the <ul> itself.)
-    let ulLength = document.getElementById(data[0]).children.length // the amount of tasks in the current section that the task was drop into
     const originEl = document.getElementById(data[0]).children[data[1]]; // saves the element that dragged and should move a section
     if (data[0] !== curUl.id){ //condition that prevents the user from drag tasks to his section
         curUl.prepend(originEl) // insert the task into the top of the <ul>
@@ -189,5 +188,5 @@ async function loadApi(event) { // async function that load the tasks from the a
 }
 
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
-document.addEventListener("keyup" , event => altpressed = false) // if alt is no longer pressed
+document.addEventListener("keyup" , () => altpressed = false) // if alt is no longer pressed
 
