@@ -2,7 +2,7 @@
 https://zivserphos.github.io/kanban-final/solution/
 
 # Here you can see my tasks!.
-![image](https://user-images.githubusercontent.com/89525096/134785269-9d9f7f75-8153-4bb7-ae0c-ef3b36c965fa.png)
+![image](https://user-images.githubusercontent.com/89525096/134788771-4b5c6a9a-7d12-4ea0-8aaa-1bf99edab198.png)
 
 # ZIV SERPHOS Cyber4s 3rd Pre-Course Final Project
 
@@ -21,6 +21,8 @@ also nice feature that will make user life easier is drag and drop function that
 there is 3 buttons below the "todo" section the save one is to send an api PUT request with current tasks that are shown in the page, the load is like undo that refresh the local storage according to current api and also update the DOM. "clear all" button used for delate all tasks.
 
 # importent things you should know:
+
+- to delete task drag the task into the "drag to delete" button
 
 - all tasks that are added/moved/dragged to a <ul> list are insert to the top of the list in order to help the user see the change at the same moment.
 
