@@ -138,7 +138,6 @@ function validChange(event , localSaveKey){
     else {
         event.target.textContent = originTask
     }
-
 }
 
 function saveEditTask(event) { // function that saves the user edit when the <li> element(task) is out of focus
@@ -149,11 +148,27 @@ function saveEditTask(event) { // function that saves the user edit when the <li
 }
 
 function drag(event) {
-    const liTag = event.target // save the <li> tag
-    const listId = liTag.closest("ul").id; // save the <ul> id which is a key in the local storage
+    const listId = event.target.closest("ul").id; // save the <ul> id which is a key in the local storage
     const localSaveKey = localSave[listId]; // the array of the same key with <ul> id
-    const indexTask = localSaveKey.indexOf(liTag.textContent) // the index of the task in the local storage tasks[key]
+    const indexTask = localSaveKey.indexOf(event.target.textContent) // the index of the task in the local storage tasks[key]
     event.dataTransfer.setData("text", [listId , indexTask]); // save and pass the <ul> id and the index task 
+}
+
+function removeTask(originEl , data){
+    originEl.remove()
+    localSave[data[0]].splice(data[1],1) // update the changes
+    localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
+}
+
+function taskDroppedToOtherSec(data , curUl , originEl){
+    if (data[0] !== curUl.id){ //condition that prevents the user from drag tasks to his section
+        curUl.prepend(originEl) // insert the task into the top of the <ul>
+        localSave[curUl.id].unshift(originEl.textContent) // save the change in the local storage
+        localSave[data[0]].splice(data[1],1) // delete the dragged task from the the origin place at local storage
+        localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
+        return;
+    }
+
 }
 
 function drop(event) {
@@ -161,18 +176,10 @@ function drop(event) {
     const data = event.dataTransfer.getData("text").split(",") // an array with the passed data
     const originEl = document.getElementById(data[0]).children[data[1]]; // saves the element that dragged and should move a section
     if (event.target.id === "removeTask"){ // checks if element dragged into delete element, if it is delete the task
-        originEl.remove()
-        localSave[data[0]].splice(data[1],1) // update the changes
-        localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
-        return;
+        return removeTask(originEl , data);
     }
     const curUl = event.target.closest("section").children[0] // in case the user dropped the task somewhere in the section(not on the <ul> itself.)
-    if (data[0] !== curUl.id){ //condition that prevents the user from drag tasks to his section
-        curUl.prepend(originEl) // insert the task into the top of the <ul>
-        localSave[curUl.id].unshift(originEl.textContent) // save the change in the local storage
-        localSave[data[0]].splice(data[1],1) // delete the dragged task from the the origin place at local storage
-        localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
-    }
+    taskDroppedToOtherSec(data , curUl , originEl)
   }
 
 async function saveApi(event) { // async function that send http PUT request to the api to save there the current tasks from the local storage
