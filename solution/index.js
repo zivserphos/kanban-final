@@ -105,14 +105,18 @@ const changeTaskSection = event => altpressed && event.key === "1" ? moveTaskToS
 :  altpressed && event.key === "2" ? moveTaskToSection("in-progress") // if alt+2 is currently pressed together move the task to second section
 :  altpressed && event.key === "3" ? moveTaskToSection("done") : changeTaskSection // if alt+3 is currently pressed together move the task to second section else, do nothing
 
-function searchTaskByQuery(event) { // filter the tasks accordingly to the search bar input
-    const query = event.target.value.toLowerCase()
-    for (let key in localSave) { 
-        const ul = document.getElementById(key) // the <ul> with the id of key (todo , in-progress or done)
+function filter(key , query) {
+    const ul = document.getElementById(key) // the <ul> with the id of key (todo , in-progress or done)
         for(let i=0; i<ul.children.length;i++) { // pass on all the <li> elements (tasks)
             ul.children[i].textContent.toLowerCase().replace(/[\W_]/g , "").includes(query) ? ul.children[i].hidden = false : ul.children[i].hidden = true // filter the tasks with regex and hide tasks that are not include the query text
         }   
-    }
+}
+
+function searchTaskByQuery(event) { // filter the tasks accordingly to the search bar input
+    const query = event.target.value.toLowerCase()
+    for (let key in localSave) { 
+        filter(key , query)
+    }   
 }
 
 function editTask(event) {
