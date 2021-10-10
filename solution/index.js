@@ -87,10 +87,15 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
     }  
 }
 
+
+function deletetask(id){
+    localSave[id].unshift(currentEl.textContent)
+        localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
+
+}
 function moveTaskToSection(id) { 
     if(currentEl && currentEl.closest("ul").id !== id) {
-        localSave[id].unshift(currentEl.textContent)
-        localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
+        deletetask(id)
         localStorage.setItem("tasks", JSON.stringify(localSave))
         document.getElementById(id).prepend(currentEl)
     }
