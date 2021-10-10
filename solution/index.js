@@ -12,24 +12,34 @@ presentTasks(tasks) // call the function to present tasks on the page
 
 function presentTasks(tasks) {
     if (!tasks) {  // even if there is no tasks at the moment local storage will still have a key of tasks with empty array for each section
-        tasks = {
-            "todo": [],
-            "in-progress": [],
-            "done": []
-        }
-        window.localStorage.setItem("tasks" , JSON.stringify(tasks)) // updatae local storage
+        tasks = defaultTasks()
     }
     else // present the tasks on the page also after when you refresh it
     {
         localSave = JSON.parse(tasks); // a global variable with the localStorage.tasks value parsed into object
-        for (let key in localSave) {
-            for(let task of localSave[key]) {
-                const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
-                document.getElementById(key).append(li)
-            }
-        }
+        createTasks()
     }
     localSave = JSON.parse(window.localStorage.getItem("tasks")) // parse the value of localStprage.tasks into object
+}
+
+function createTasks() {
+    for (let key in localSave) {
+        for(let task of localSave[key]) {
+            const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
+            document.getElementById(key).append(li)
+        }
+    }
+}
+
+function defaultTasks() {
+    tasks = {
+        "todo": [],
+        "in-progress": [],
+        "done": []
+    }
+    window.localStorage.setItem("tasks" , JSON.stringify(tasks)) // update local storage
+    return tasks
+
 }
 
 
