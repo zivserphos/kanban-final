@@ -209,6 +209,22 @@ async function checkSaveStatus(response) {
     alert("error") // status is not good, user will be alerted
 }
 
+async function checkLoadStatus(response) {
+    if (response.ok) { // if the response was successful (between 200 to 300)
+        const data = await response.json() // saves the response data as object
+        const lastTasks = data.tasks // the tasks that are now on the api
+        for (let key in localSave){
+            document.getElementById(key).textContent = "" // delete all children of the <ul> elements (tasks)
+        }
+        localSave = JSON.parse(JSON.stringify(lastTasks)) // tasks on the api as object
+        createTasks()
+        localStorage.setItem("tasks" , JSON.stringify(localSave)) // sets the local storage to the current saved api tasks
+    } 
+    else {
+        alert ("error")
+    }
+}
+
 
 async function saveApi(event) { // async function that send http PUT request to the api to save there the current tasks from the local storage
     event.target.classList.add("loader") // if button save clicked add him the loader class
@@ -228,26 +244,8 @@ async function saveApi(event) { // async function that send http PUT request to 
 async function loadApi(event) { // async function that load the tasks from the api, update both the local storage and the DOM 
     event.target.classList.add("loader") // if button load clicked add him the loader class
     const response = await fetch("https://json-bins.herokuapp.com/bin/614afec64021ac0e6c080ccb") // get request to the api
-    if (response.ok) { // if the response was successful (between 200 to 300)
-        const data = await response.json() // saves the response data as object
-        const lastTasks = data.tasks // the tasks that are now on the api
-        for (let key in localSave){
-            document.getElementById(key).textContent = "" // delete all children of the <ul> elements (tasks)
-        }
-        localSave = JSON.parse(JSON.stringify(lastTasks)) // tasks on the api as object
-        for (let key in localSave){ // todo, in-progress , done
-            for(let task of localSave[key]) { // for every task in the current load api
-                const li = createElement("li", [task] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)" ,onmouseout: "outOfElemet(event)" , onblur: "saveEditTask(event)" , ondragstart: "drag(event)" , onfocus: "toPink(event)"}) // create <li> element with all the  
-                document.getElementById(key).append(li) // insert the <li> element to the <ul> element
-            }
-        }
-        localStorage.setItem("tasks" , JSON.stringify(localSave))
-        event.target.classList.remove("loader") // class loader is shown while waiting for an answer from the api, and then removed
-    }   
-    else {
-        alert("erorr") // status is not good, user will be alerted
-        event.target.classList.remove("loader") // class loader is shown while waiting for an answer from the api, and then removed
-    }
+    checkLoadStatus(response)
+    event.target.classList.remove("loader") // class loader is shown while waiting for an answer from the api, and then removed
 }
 
 function clearAll(event) { // delete all the current tasks
@@ -262,6 +260,6 @@ function clearAll(event) { // delete all the current tasks
  // =================================
  // =================================
  // =================================
- 
+
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
 document.addEventListener("keyup" , () => altpressed = false) // if alt is no longer pressed
