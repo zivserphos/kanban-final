@@ -125,17 +125,26 @@ function editTask(event) {
     tag.contentEditable = "true"; // allows edit text without turn into input 
 }
 
-function saveEditTask(event) { // function that saves the user edit when the <li> element(task) is out of focus
+function taskFocused(event) {
     const tag = event.target // find tag
     tag.style.background = ''; // return the <li> element to white background when element is out of focus
-    const localSaveKey = localSave[tag.closest("ul").id] // the array according to the theme of the tasks
-    if (tag.textContent !== "") { // if the user didnt left the input empty
-        localSaveKey[localSaveKey.indexOf(originTask)] = tag.textContent // save the change that the user left
+    return localSave[tag.closest("ul").id] // the array according to the theme of the tasks
+}
+
+function validChange(event , localSaveKey){
+    if (event.target.textContent !== "") { // if the user didnt left the input empty
+        localSaveKey[localSaveKey.indexOf(originTask)] = event.target.textContent // save the change that the user left
     }
     else {
-        tag.textContent = originTask
+        event.target.textContent = originTask
     }
-    tag.contentEditable = false; // <li> is no more editable when out of focus
+
+}
+
+function saveEditTask(event) { // function that saves the user edit when the <li> element(task) is out of focus
+    const localSaveKey= taskFocused(event)
+    validChange(event , localSaveKey)
+    event.target.contentEditable = false; // <li> is no more editable when out of focus
     localStorage.setItem("tasks" , JSON.stringify(localSave)) // saves the changes in the local storage
 }
 
