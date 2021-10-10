@@ -206,4 +206,3 @@ function clearAll(event) { // delete all the current tasks
 
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
 document.addEventListener("keyup" , () => altpressed = false) // if alt is no longer pressed
-
