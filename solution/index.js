@@ -57,15 +57,18 @@ function createElement(tagName, children = [], classes = [], attributes = {}) { 
     return el
 }
 
+function buttonAnimation(buttonText , taskInput , buttonTag , originbuttonText) {
+    if (taskInput !== ""){ // works only when user write in the input 
+        if (buttonText.innerHTML.toLowerCase() === "add " + buttonText.closest("section").children[0].id) { // in case the button is not already pressed
+            buttonText.innerHTML =  "<svg width=\"58\" height=\"45\" viewBox=\"0 0 58 45\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"#fff\" fill-rule=\"nonzero\" d=\"M19.11 44.64L.27 25.81l5.66-5.66 13.18 13.18L52.07.38l5.65 5.65\"/></svg>"; // the icon that will be shown to the user when click the button to add task; // change the <div> buttonText into the icon that will be shown to the user when click the button to add task
+        }
+        buttonTag.classList.toggle('submit__circle'); // flips the <button> tag 180deg
+        setTimeout(function() {buttonTag.classList.toggle('submit__circle')}, 800) // flips the <button> again 180deg to return the same place he was
+        setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1000) // change the <div> button text in to the original text
+    }  
+}
 
-function addTask(e) { // attr on click for the submit buttons to add tasks
-    const buttonTag = e.target.closest("button") // in case the user pressed the the div inside the button tag
-    const inputTag = document.getElementById(buttonTag.id.split("submit-")[1]+ "-task") // find that <input> closest tag  to the button (in the same section of the button)
-    const taskInput = inputTag.value // input value
-    const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s") // find the closest <ul> tag (in the same section of the button)
-    inputTag.value = "" // clear the input field after click on add task
-    const li = createElement("li", [] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)", onmouseout: "outOfElemet(event)", onblur: "saveEditTask(event)" , ondragstart: "drag(event)", onfocus: "toPink(event)"}) // create new <li> element
-    li.append(taskInput)
+function handleTaskInput(taskInput , ul , li) {
     if (taskInput === "") { // prevent the user from add empty task
         alert("You cant add an empty input as a task") //alert the user
     }
@@ -74,17 +77,25 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
     localSave[ul.id].unshift(taskInput) // insert the task in to the appropriate array
     localStorage.setItem("tasks" , JSON.stringify(localSave)) // saves the changes in local storage
     }
-    let buttonText = buttonTag.children[0] // saves the element that contains the current button text
-    const originbuttonText = buttonText.textContent // saves the original text in the button
-    const tickMark = "<svg width=\"58\" height=\"45\" viewBox=\"0 0 58 45\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"#fff\" fill-rule=\"nonzero\" d=\"M19.11 44.64L.27 25.81l5.66-5.66 13.18 13.18L52.07.38l5.65 5.65\"/></svg>"; // the icon that will be shown to the user when click the button to add task
-    if (taskInput !== ""){ // works only when user write in the input 
-        if (buttonText.innerHTML.toLowerCase() === "add " + buttonText.closest("section").children[0].id) { // in case the button is not already pressed
-            buttonText.innerHTML = tickMark; // change the <div> buttonText into the icton tickMark
-        }
-        buttonTag.classList.toggle('submit__circle'); // flips the <button> tag 180deg
-        setTimeout(function() {buttonTag.classList.toggle('submit__circle')}, 800) // flips the <button> again 180deg to return the same place he was
-        setTimeout(function() {buttonText.innerHTML = originbuttonText}, 1000) // change the <div> button text in to the original text
-    }  
+}
+
+function newTaskParameters(e) {
+    const buttonTag = e.target.closest("button") // in case the user pressed the the div inside the button tag
+    const inputTag = document.getElementById(buttonTag.id.split("submit-")[1]+ "-task") // find that <input> closest tag  to the button (in the same section of the button)
+    const taskInput = inputTag.value // input value
+    const ul = document.querySelector("." + inputTag.id.split("add-")[1] + "s") // find the closest <ul> tag (in the same section of the button)
+    return [buttonTag , inputTag , taskInput , ul , buttonTag.children[0]]
+
+}
+
+
+function addTask(e) { // attr on click for the submit buttons to add tasks
+    const [buttonTag , inputTag , taskInput , ul , buttonText] = newTaskParameters(e)
+    inputTag.value = "" // clear the input field after click on add task
+    const li = createElement("li", [] , ["task"] , {draggable: "true" ,ondblclick: "editTask(event)" , onmouseover: "mouseOverElement(event)", onmouseout: "outOfElemet(event)", onblur: "saveEditTask(event)" , ondragstart: "drag(event)", onfocus: "toPink(event)"}) // create new <li> element
+    li.append(taskInput)
+    handleTaskInput(taskInput , ul , li)
+    buttonAnimation(buttonText , taskInput , buttonTag , buttonText.textContent)
 }
 
 
@@ -155,9 +166,11 @@ function drag(event) {
 }
 
 function removeTask(originEl , data){
+    if (originEl.tagName === "LI") {
     originEl.remove()
     localSave[data[0]].splice(data[1],1) // update the changes
     localStorage.setItem("tasks" , JSON.stringify(localSave)) // save the changes
+    }
 }
 
 function taskDroppedToOtherSec(data , curUl , originEl){
@@ -182,6 +195,21 @@ function drop(event) {
     taskDroppedToOtherSec(data , curUl , originEl)
   }
 
+//==============================
+//=========== API ==============
+//==============================
+
+async function checkSaveStatus(response) {
+    if (response.ok) { // if the response was successful (between 200 to 300)
+        const data = await response.json() // saves the response data as object
+        const lastTasks = data.tasks // the tasks that are now on the api
+        localStorage.setItem("tasks" , JSON.stringify(localSave)) // sets the local storage to the current saved api tasks
+        return;
+    }
+    alert("error") // status is not good, user will be alerted
+}
+
+
 async function saveApi(event) { // async function that send http PUT request to the api to save there the current tasks from the local storage
     event.target.classList.add("loader") // if button save clicked add him the loader class
     const tasks = localSave // in order to send the request correctly
@@ -193,14 +221,7 @@ async function saveApi(event) { // async function that send http PUT request to 
         },
         body: JSON.stringify({tasks}), 
     })
-    if (response.ok) { // if the response was successful (between 200 to 300)
-        const data = await response.json() // saves the response data as object
-        const lastTasks = JSON.stringify(data.tasks) // the tasks that are now on the api
-        localStorage.setItem("tasks" , lastTasks) // sets the local storage to the current saved api tasks
-    }
-    else {
-        alert("error") // status is not good, user will be alerted
-    }
+    checkSaveStatus(response)
     event.target.classList.remove("loader") // class loader is shown while waiting for an answer from the api, and then removed
 }
 
@@ -238,6 +259,9 @@ function clearAll(event) { // delete all the current tasks
     localStorage.setItem("tasks" , JSON.stringify(localSave))
 
 }
-
+ // =================================
+ // =================================
+ // =================================
+ 
 document.addEventListener("keydown" , event => event.key === "Alt" ? altpressed = true : changeTaskSection(event)) // check if the key is alt and saves altpressed as true else call changeTaskSection(event)
 document.addEventListener("keyup" , () => altpressed = false) // if alt is no longer pressed
