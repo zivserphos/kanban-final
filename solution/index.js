@@ -10,6 +10,25 @@ const mouseOverElement = event => event.target.tagName === "LI" ? currentEl = ev
 const outOfElemet = event => event.target.tagName === "LI" ? currentEl = null : outOfElemet // attr for <li> elements that can tell if the mouse is over the element
 presentTasks(tasks) // call the function to present tasks on the page
 
+function createElement(tagName, children = [], classes = [], attributes = {}) { // create new element in more comfortable
+    const el = document.createElement(tagName); 
+    for (let child of children) { // append childs of element
+        el.append(child)
+    }
+    for (let cls of classes) { // add all the classes to the element
+        el.classList.add(cls)
+    }
+    for (let attr in attributes) { // add all attributes to the element
+        el.setAttribute(attr , attributes[attr])
+    }
+    return el
+}
+
+
+//==============================
+//=========== DOM ==============
+//==============================
+
 function presentTasks(tasks) {
     if (!tasks) {  // even if there is no tasks at the moment local storage will still have a key of tasks with empty array for each section
         tasks = defaultTasks()
@@ -42,20 +61,9 @@ function defaultTasks() {
 
 }
 
-
-function createElement(tagName, children = [], classes = [], attributes = {}) { // create new element in more comfortable
-    const el = document.createElement(tagName); 
-    for (let child of children) { // append childs of element
-        el.append(child)
-    }
-    for (let cls of classes) { // add all the classes to the element
-        el.classList.add(cls)
-    }
-    for (let attr in attributes) { // add all attributes to the element
-        el.setAttribute(attr , attributes[attr])
-    }
-    return el
-}
+//====================================================
+//=========== ADD TASK BY SUBMIT BUTTON ==============
+//====================================================
 
 function buttonAnimation(buttonText , taskInput , buttonTag , originbuttonText) {
     if (taskInput !== ""){ // works only when user write in the input 
@@ -98,15 +106,18 @@ function addTask(e) { // attr on click for the submit buttons to add tasks
     buttonAnimation(buttonText , taskInput , buttonTag , buttonText.textContent)
 }
 
+//====================================================
+//=========== MOVE TASKS WITH ALT+1/2/3 ==============
+//====================================================
 
-function deletetask(id){
+function deleteTask(id){
     localSave[id].unshift(currentEl.textContent)
         localSave[currentEl.closest("ul").id].splice(localSave[currentEl.closest("ul").id].indexOf(currentEl.textContent),1)
 
 }
 function moveTaskToSection(id) { 
     if(currentEl && currentEl.closest("ul").id !== id) {
-        deletetask(id)
+        deleteTask(id)
         localStorage.setItem("tasks", JSON.stringify(localSave))
         document.getElementById(id).prepend(currentEl)
     }
@@ -129,6 +140,10 @@ function searchTaskByQuery(event) { // filter the tasks accordingly to the searc
         filter(key , query)
     }   
 }
+
+//==============================
+//=========== EDIT TASK ==============
+//==============================
 
 function editTask(event) {
     const tag = event.target; // find tag
@@ -157,6 +172,10 @@ function saveEditTask(event) { // function that saves the user edit when the <li
     event.target.contentEditable = false; // <li> is no more editable when out of focus
     localStorage.setItem("tasks" , JSON.stringify(localSave)) // saves the changes in the local storage
 }
+
+//==============================
+//=========== DRAG AND DROP ==============
+//==============================
 
 function drag(event) {
     const listId = event.target.closest("ul").id; // save the <ul> id which is a key in the local storage
