@@ -33,8 +33,7 @@ function presentTasks(tasks) {
     if (!tasks) {  // even if there is no tasks at the moment local storage will still have a key of tasks with empty array for each section
         tasks = defaultTasks()
     }
-    else // present the tasks on the page also after when you refresh it
-    {
+    else { // present the tasks on the page also after when you refresh it
         localSave = JSON.parse(tasks); // a global variable with the localStorage.tasks value parsed into object
         createTasks()
     }
