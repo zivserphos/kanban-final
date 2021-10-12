@@ -1,4 +1,4 @@
-import style from './styles.css';
+//import style from './styles.css';
 
 
 let tasks = window.localStorage.getItem("tasks") // all the tasks in the local storage
