@@ -1,3 +1,6 @@
+import style from './styles.css';
+
+
 let tasks = window.localStorage.getItem("tasks") // all the tasks in the local storage
 let originTask; // saves and pass the <li> element that dragged in to other section  
 let altpressed = false; // global variable to check is alt is currently pressed
